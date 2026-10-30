@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="{{ lang }}" class="h-full">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}{{ t('brand') }}{% endblock %}</title>
+  <meta name="description" content="{{ t('tagline') }}"/>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="/static/app.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: { 950: '#070b14', 900: '#0b1220', 800: '#111827', 700: '#1f2937' },
+            accent: { DEFAULT: '#6366f1', soft: '#818cf8', glow: '#a5b4fc' },
+            mint: '#34d399',
+          },
+          fontFamily: {
+            sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+          },
+          boxShadow: {
+            glow: '0 0 40px rgba(99,102,241,0.25)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.18), transparent 55%),
+                       radial-gradient(900px 500px at 90% 0%, rgba(52,211,153,.10), transparent 50%),
+                       #070b14; }
+    .glass { background: rgba(17,24,39,.72); backdrop-filter: blur(12px); border: 1px solid rgba(148,163,184,.14); }
+    .card { background: rgba(17,24,39,.85); border: 1px solid rgba(148,163,184,.12); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; border-radius:0.5rem; padding:0.5rem 1rem; font-size:0.875rem; font-weight:500; transition:0.15s; }
+    .input { width:100%; border-radius:0.5rem; border:1px solid #334155; background:#0b1220; padding:0.5rem 0.75rem; font-size:0.875rem; color:#f1f5f9; }
+    .input::placeholder { color:#64748b; }
+    .input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }
+    .tab-active { border-color: #818cf8; color: #e0e7ff; background: rgba(99,102,241,.12); }
+    pre code { font-size: 0.8rem; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-full text-slate-100 font-sans antialiased">
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-ink-950/80 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+      <a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent/20 text-accent-glow ring-1 ring-accent/40">M</span>
+        <span>{{ t('brand') }}</span>
+        <span class="hidden text-xs font-normal text-slate-500 sm:inline">v{{ version }}</span>
+      </a>
+      <nav class="flex items-center gap-1 text-sm text-slate-300 sm:gap-2">
+        <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/models">{{ t('nav_models') }}</a>
+        <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/docs/">{{ t('nav_docs') }}</a>
+        <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/api/docs">{{ t('nav_api') }}</a>
+        {% if user %}
+          <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/console">{{ t('nav_console') }}</a>
+          <form action="/logout" method="post" class="inline">
+            <button class="rounded-md px-2 py-1 text-slate-400 hover:bg-slate-800 hover:text-white" type="submit">{{ t('nav_logout') }}</button>
+          </form>
+        {% else %}
+          <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/login">{{ t('nav_login') }}</a>
+          <a class="rounded-lg bg-accent px-3 py-1.5 font-medium text-white shadow-glow hover:bg-accent-soft" href="/register">{{ t('nav_register') }}</a>
+        {% endif %}
+        <div class="ml-1 flex overflow-hidden rounded-md border border-slate-700 text-xs">
+          <a class="px-2 py-1 {% if lang=='zh' %}bg-slate-700 text-white{% else %}text-slate-400 hover:bg-slate-800{% endif %}"
+             href="/set-lang?lang=zh&next={{ request.url.path | urlencode }}">中</a>
+          <a class="px-2 py-1 {% if lang=='en' %}bg-slate-700 text-white{% else %}text-slate-400 hover:bg-slate-800{% endif %}"
+             href="/set-lang?lang=en&next={{ request.url.path | urlencode }}">EN</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="mt-16 border-t border-slate-800/80">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <span class="text-slate-300">{{ t('brand') }}</span>
+        <span class="mx-2">·</span>
+        {{ t('footer_studio') }} <span class="text-slate-400">{{ studio }}</span>
+        <span class="mx-2">·</span>
+        {{ author }}
+      </div>
+      <div>
+        {{ t('footer_contact') }}:
+        <a class="text-accent-soft hover:underline" href="mailto:{{ contact }}">{{ contact }}</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (!btn) return;
+        const old = btn.textContent;
+        btn.textContent = {{ t('copied')|tojson }};
+        setTimeout(() => btn.textContent = old, 1200);
+      });
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,13 @@
+services:
+  mock-my-ai:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MOCK_MY_AI_HOST: "0.0.0.0"
+      MOCK_MY_AI_PORT: "8000"
+    volumes:
+      # Optional: override config / corpus without rebuild
+      - ./config:/app/config:ro
+      - ./data:/app/data:ro
+    restart: unless-stopped

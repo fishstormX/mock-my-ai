@@ -1,0 +1,31 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Local runtime / secrets (never commit)
+.env
+.env.*
+!.env.example
+data/app.db
+data/app.db-*
+data/.session_secret
+*.db
+
+# Docs build
+site/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp

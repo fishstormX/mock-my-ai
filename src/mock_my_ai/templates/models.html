@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav_models') }} — {{ t('brand') }}{% endblock %}
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-white">{{ t('nav_models') }}</h1>
+  <p class="mt-2 text-slate-400">{{ t('section_models_help') }}</p>
+  {% if catalog_meta %}
+  <p class="mt-2 text-xs text-slate-500">Source: <span class="font-mono">{{ catalog_meta.source or 'bundled' }}</span>{% if catalog_meta.fetched_at %} · {{ catalog_meta.fetched_at }}{% endif %}</p>
+  {% endif %}
+</div>
+
+{% if customs %}
+<section class="mb-10">
+  <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('custom') }}</h2>
+  <div class="card overflow-hidden rounded-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-ink-900 text-xs uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-3">ID</th>
+            <th class="px-4 py-3">{{ t('col_family') }}</th>
+            <th class="px-4 py-3">{{ t('col_params') }}</th>
+            <th class="px-4 py-3">{{ t('col_context') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          {% for m in customs %}
+          <tr>
+            <td class="px-4 py-3 font-mono text-slate-200">{{ m.model_id }}</td>
+            <td class="px-4 py-3 text-slate-400">{{ m.family }}</td>
+            <td class="px-4 py-3">{{ m.parameter_count or '—' }}</td>
+            <td class="px-4 py-3">{% if m.context_window %}{{ '{:,}'.format(m.context_window) }} {{ t('tokens') }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section>
+  <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('builtin') }}</h2>
+  <div class="card overflow-hidden rounded-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-ink-900 text-xs uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-3">ID</th>
+            <th class="px-4 py-3">{{ t('col_owner') }}</th>
+            <th class="px-4 py-3">{{ t('col_params') }}</th>
+            <th class="px-4 py-3">{{ t('col_context') }}</th>
+            <th class="px-4 py-3">{{ t('model_features') }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          {% for m in builtins %}
+          <tr class="hover:bg-slate-800/40">
+            <td class="px-4 py-3 font-mono text-slate-200">{{ m.id }}</td>
+            <td class="px-4 py-3 text-slate-400">{{ m.owned_by }}</td>
+            <td class="px-4 py-3 text-slate-300">{{ m.parameter_count or '—' }}</td>
+            <td class="px-4 py-3 text-slate-300">{% if m.context_window %}{{ '{:,}'.format(m.context_window) }}{% else %}—{% endif %}</td>
+            <td class="px-4 py-3 text-xs">
+              {% set f = m.features or {} %}
+              {% if f.get('thinking') %}<span class="mr-1 rounded bg-violet-500/20 px-1.5 py-0.5 text-violet-300">{{ t('feat_thinking') }}</span>{% endif %}
+              {% if f.get('search') %}<span class="mr-1 rounded bg-sky-500/20 px-1.5 py-0.5 text-sky-300">{{ t('feat_search') }}</span>{% endif %}
+              {% if f.get('multimodal_input') %}<span class="rounded bg-emerald-500/20 px-1.5 py-0.5 text-emerald-300">{{ t('feat_multimodal') }}</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

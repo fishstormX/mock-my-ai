@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ t('brand') }} — {{ t('tagline') }}{% endblock %}
+{% block content %}
+<section class="grid gap-10 lg:grid-cols-2 lg:items-center">
+  <div>
+    <p class="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs text-accent-glow">
+      {{ t('hero_badge') }}
+    </p>
+    <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">{{ t('brand') }}</h1>
+    <p class="mt-4 text-lg text-slate-300 leading-relaxed">{{ t('tagline') }}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      {% if user %}
+        <a href="/console" class="rounded-xl bg-accent px-5 py-2.5 font-medium text-white shadow-glow hover:bg-accent-soft">{{ t('cta_open_console') }}</a>
+      {% else %}
+        <a href="/register" class="rounded-xl bg-accent px-5 py-2.5 font-medium text-white shadow-glow hover:bg-accent-soft">{{ t('cta_get_started') }}</a>
+        <a href="/login" class="rounded-xl border border-slate-600 px-5 py-2.5 font-medium text-slate-200 hover:bg-slate-800">{{ t('nav_login') }}</a>
+      {% endif %}
+      <a href="/docs/" class="rounded-xl border border-slate-700 px-5 py-2.5 text-slate-300 hover:bg-slate-800">{{ t('cta_view_docs') }}</a>
+      <a href="/models" class="rounded-xl border border-slate-700 px-5 py-2.5 text-slate-300 hover:bg-slate-800">{{ t('nav_models') }}</a>
+    </div>
+  </div>
+  <div class="card rounded-2xl p-5 shadow-glow">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+      <span>{{ t('code_tabs_title') }}</span>
+      <div class="flex overflow-hidden rounded-md border border-slate-700">
+        <button type="button" data-tab="openai" class="code-tab px-2.5 py-1 bg-slate-700 text-white" onclick="showCodeTab('openai')">{{ t('tab_openai') }}</button>
+        <button type="button" data-tab="anthropic" class="code-tab px-2.5 py-1 text-slate-400 hover:bg-slate-800" onclick="showCodeTab('anthropic')">{{ t('tab_anthropic') }}</button>
+        <button type="button" data-tab="gemini" class="code-tab px-2.5 py-1 text-slate-400 hover:bg-slate-800" onclick="showCodeTab('gemini')">{{ t('tab_gemini') }}</button>
+      </div>
+    </div>
+    <div id="code-openai" class="code-panel">
+      <div class="mb-2 flex justify-end">
+        <button type="button" class="rounded bg-slate-800 px-2 py-1 text-xs hover:bg-slate-700"
+                onclick="copyText(document.getElementById('qs-openai').innerText, this)">{{ t('copy') }}</button>
+      </div>
+      <pre id="qs-openai" class="overflow-x-auto rounded-xl bg-ink-950 p-4 text-slate-200 ring-1 ring-slate-800"><code>curl -s {{ base_url }}/v1/chat/completions \
+  -H "Authorization: Bearer {{ sample_keys.get('openai', 'sk-mock-...') }}" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</code></pre>
+    </div>
+    <div id="code-anthropic" class="code-panel hidden">
+      <div class="mb-2 flex justify-end">
+        <button type="button" class="rounded bg-slate-800 px-2 py-1 text-xs hover:bg-slate-700"
+                onclick="copyText(document.getElementById('qs-anthropic').innerText, this)">{{ t('copy') }}</button>
+      </div>
+      <pre id="qs-anthropic" class="overflow-x-auto rounded-xl bg-ink-950 p-4 text-slate-200 ring-1 ring-slate-800"><code>curl -s {{ base_url }}/v1/messages \
+  -H "x-api-key: {{ sample_keys.get('anthropic', 'sk-ant-mock-...') }}" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"claude-sonnet-4-5","max_tokens":128,"messages":[{"role":"user","content":"Hello"}]}'</code></pre>
+    </div>
+    <div id="code-gemini" class="code-panel hidden">
+      <div class="mb-2 flex justify-end">
+        <button type="button" class="rounded bg-slate-800 px-2 py-1 text-xs hover:bg-slate-700"
+                onclick="copyText(document.getElementById('qs-gemini').innerText, this)">{{ t('copy') }}</button>
+      </div>
+      <pre id="qs-gemini" class="overflow-x-auto rounded-xl bg-ink-950 p-4 text-slate-200 ring-1 ring-slate-800"><code>curl -s "{{ base_url }}/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: {{ sample_keys.get('gemini', 'AIzaMock...') }}" \
+  -H "Content-Type: application/json" \
+  -d '{"contents":[{"role":"user","parts":[{"text":"Hello"}]}]}'</code></pre>
+    </div>
+    <p class="mt-3 text-xs text-slate-500">{{ t('sample_keys_note') }}</p>
+  </div>
+</section>
+
+<section class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  {% set feats = [
+    ('feat_compat_title','feat_compat_desc'),
+    ('feat_keys_title','feat_keys_desc'),
+    ('feat_models_title','feat_models_desc'),
+    ('feat_i18n_title','feat_i18n_desc'),
+  ] %}
+  {% for title_k, desc_k in feats %}
+  <div class="card rounded-2xl p-5 hover:border-accent/30 transition">
+    <h3 class="font-semibold text-white">{{ t(title_k) }}</h3>
+    <p class="mt-2 text-sm text-slate-400 leading-relaxed">{{ t(desc_k) }}</p>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="mt-16">
+  <h2 class="text-xl font-semibold text-white">{{ t('how_title') }}</h2>
+  <div class="mt-6 grid gap-4 md:grid-cols-3">
+    {% for n, tk, dk in [('1','how_1_title','how_1_desc'),('2','how_2_title','how_2_desc'),('3','how_3_title','how_3_desc')] %}
+    <div class="card rounded-2xl p-5">
+      <div class="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-sm font-bold text-accent-glow">{{ n }}</div>
+      <h3 class="font-semibold text-white">{{ t(tk) }}</h3>
+      <p class="mt-2 text-sm text-slate-400 leading-relaxed">{{ t(dk) }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mt-16 card rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white">{{ t('section_endpoint') }}</h2>
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <span class="text-sm text-slate-400">{{ t('base_url') }}</span>
+    <code class="rounded-lg bg-ink-950 px-3 py-1.5 text-sm text-mint ring-1 ring-slate-800">{{ base_url }}</code>
+    <button type="button" class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-800"
+            onclick="copyText('{{ base_url }}', this)">{{ t('copy') }}</button>
+    <a href="/models" class="text-sm text-accent-soft hover:underline">{{ t('nav_models') }} →</a>
+    <a href="/healthz" class="text-sm text-slate-400 hover:text-white">/healthz</a>
+  </div>
+</section>
+
+<section class="mt-16 overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 via-ink-900 to-ink-950 p-8 shadow-glow sm:p-10">
+  <h2 class="text-2xl font-bold text-white">{{ t('pricing_title') }}</h2>
+  <p class="mt-3 max-w-2xl text-slate-300 leading-relaxed">{{ t('pricing_desc') }}</p>
+  <div class="mt-6 flex flex-wrap gap-3">
+    {% if user %}
+      <a href="/console" class="rounded-xl bg-white px-5 py-2.5 font-medium text-ink-900 hover:bg-slate-100">{{ t('cta_open_console') }}</a>
+    {% else %}
+      <a href="/register" class="rounded-xl bg-white px-5 py-2.5 font-medium text-ink-900 hover:bg-slate-100">{{ t('pricing_cta') }}</a>
+    {% endif %}
+    <a href="/docs/" class="rounded-xl border border-slate-500 px-5 py-2.5 text-slate-200 hover:bg-slate-800/60">{{ t('cta_view_docs') }}</a>
+  </div>
+</section>
+
+<section class="mt-16 text-center">
+  <h2 class="text-xl font-semibold text-white">{{ t('cta_bottom_title') }}</h2>
+  <p class="mt-2 text-slate-400">{{ t('cta_bottom_desc') }}</p>
+  {% if not user %}
+  <a href="/register" class="mt-6 inline-flex rounded-xl bg-accent px-6 py-2.5 font-medium text-white shadow-glow hover:bg-accent-soft">{{ t('cta_get_started') }}</a>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  function showCodeTab(name) {
+    document.querySelectorAll('.code-panel').forEach(el => el.classList.add('hidden'));
+    document.getElementById('code-' + name).classList.remove('hidden');
+    document.querySelectorAll('.code-tab').forEach(btn => {
+      const on = btn.getAttribute('data-tab') === name;
+      btn.classList.toggle('bg-slate-700', on);
+      btn.classList.toggle('text-white', on);
+      btn.classList.toggle('text-slate-400', !on);
+    });
+  }
+</script>
+{% endblock %}

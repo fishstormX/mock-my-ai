@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav_register') }} — {{ t('brand') }}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md">
+  <div class="card rounded-2xl p-8 shadow-glow">
+    <h1 class="text-2xl font-bold text-white">{{ t('register_title') }}</h1>
+    <p class="mt-2 text-sm text-slate-400">{{ t('register_subtitle') }}</p>
+    {% if error %}
+    <div class="mt-4 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/register" class="mt-6 space-y-4">
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('email') }}</label>
+        <input class="input" type="email" name="email" required value="{{ email|default('') }}" autocomplete="username"/>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('display_name') }}</label>
+        <input class="input" type="text" name="display_name" value="{{ display_name|default('') }}"/>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('password') }}</label>
+        <input class="input" type="password" name="password" required minlength="8" autocomplete="new-password"/>
+        <p class="mt-1 text-xs text-slate-500">{{ t('password_hint') }}</p>
+      </div>
+      <button type="submit" class="w-full rounded-xl bg-accent py-2.5 font-medium text-white hover:bg-accent-soft">{{ t('btn_register') }}</button>
+    </form>
+    <p class="mt-6 text-center text-sm text-slate-400">
+      {{ t('have_account') }}
+      <a class="text-accent-soft hover:underline" href="/login">{{ t('nav_login') }}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

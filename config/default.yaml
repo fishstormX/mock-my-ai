@@ -1,0 +1,87 @@
+# Mock My AI — default configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  docs_enabled: true
+
+auth:
+  # Light format checks only. These sample keys are documented for clients.
+  require_api_key: true
+  # When false (default), only sample keys + console DB keys are accepted.
+  accept_prefix_keys: false
+  # Accept any key matching these prefixes (or listed exactly)
+  accepted_prefixes:
+    - "sk-mock-"
+    - "sk-ant-mock-"
+    - "AIzaMock"
+  sample_keys:
+    openai: "sk-mock-openai-demo-key-0123456789abcdef"
+    anthropic: "sk-ant-mock-anthropic-demo-key-0123456789"
+    gemini: "AIzaMockGeminiDemoKey0123456789abcdef"
+
+generation:
+  # In-response tool_use count per HTTP call (random inclusive range)
+  tool_loop_min: 0
+  tool_loop_max: 3
+  # Across-conversation agent loop budget (1–5). Stop tool_use after this many
+  # prior tool_use/tool_result steps in messages so Claude Code does not loop.
+  agent_tool_steps_max: 3
+  # Default cached_tokens ratio range (prompt tokens)
+  cache_ratio_min: 0.20
+  cache_ratio_max: 0.80
+  # DeepSeek-series cache ratio
+  deepseek_cache_ratio_min: 0.90
+  deepseek_cache_ratio_max: 0.99
+  # Thinking / reasoning mock
+  thinking_enabled_default: true
+  thinking_token_min: 20
+  thinking_token_max: 120
+  # Mock search citations (Sources / 来源); default off — console Settings can enable
+  search_enabled_default: false
+  default_temperature: 1.0
+  max_output_segments: 3
+
+tools:
+  enabled:
+    - echo
+    - list_files
+  # Root for list_files (read-only listing)
+  list_files_root: "./"
+  # Max entries returned by list_files
+  list_files_max: 50
+
+models:
+  # Auto-refresh built-in catalogs from models.dev (TTL cache under data/)
+  catalog_source: "https://models.dev/api.json"
+  catalog_cache_path: "data/models_catalog_cache.json"
+  catalog_ttl_hours: 24
+  catalog_auto_refresh: true
+  # Extra custom models merged into catalogs
+  custom: []
+  # Example:
+  # custom:
+  #   - id: "my-org/custom-mock-1"
+  #     owned_by: "custom"
+  #     family: "openai"   # openai | anthropic | gemini
+  #     features:
+  #       thinking: true
+  #       search: false
+  #       multimodal_input: true
+
+corpus:
+  path: "data/corpus"
+  custom_qa_path: "data/corpus/custom_qa.json"
+  primary_languages:
+    - en
+    - zh
+    - ja
+    - es
+    - fr
+  fallback_language: en
+
+console:
+  db_path: "data/app.db"
+  # Leave empty to auto-detect from the request (X-Forwarded-* / Host).
+  # Production example: "https://aimock.fishmaple.cn"
+  public_base_url: ""
+

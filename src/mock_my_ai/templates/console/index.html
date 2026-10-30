@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}{{ t('console_title') }} — {{ t('brand') }}{% endblock %}
+{% block content %}
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-3xl font-bold text-white">{{ t('console_title') }}</h1>
+    <p class="mt-1 text-slate-400">{{ t('console_welcome', name=user.display_name or user.email) }}</p>
+  </div>
+  <div class="card rounded-xl px-4 py-3 text-sm">
+    <div class="text-xs text-slate-500">{{ t('base_url') }}</div>
+    <div class="mt-1 flex items-center gap-2">
+      <code class="text-mint">{{ base_url }}</code>
+      <button type="button" class="rounded border border-slate-700 px-2 py-0.5 text-xs hover:bg-slate-800"
+              onclick="copyText('{{ base_url }}', this)">{{ t('copy') }}</button>
+    </div>
+  </div>
+</div>
+
+{% if flash_msg == 'invalid_cidr' %}
+<div class="mb-6 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{{ t('flash_invalid_cidr') }}</div>
+{% elif flash_msg == 'key_created' and not flash_raw_key %}
+<div class="mb-6 rounded-xl border border-mint/40 bg-mint/10 px-4 py-3 text-sm text-mint">{{ t('flash_key_created') }}</div>
+{% elif flash_msg == 'search_saved' %}
+<div class="mb-6 rounded-xl border border-mint/40 bg-mint/10 px-4 py-3 text-sm text-mint">{{ t('flash_search_saved') }}</div>
+{% elif flash_msg == 'logs_cleared' %}
+<div class="mb-6 rounded-xl border border-mint/40 bg-mint/10 px-4 py-3 text-sm text-mint">{{ t('flash_logs_cleared') }}</div>
+{% endif %}
+{% if flash_raw_key %}
+<div class="mb-6 rounded-xl border border-mint/40 bg-mint/10 p-4">
+  <p class="text-sm font-medium text-mint">{{ t('key_created_once') }}</p>
+  <div class="mt-2 flex flex-wrap items-center gap-2">
+    <code id="newkey" class="break-all rounded-lg bg-ink-950 px-3 py-2 text-sm text-white ring-1 ring-slate-700">{{ flash_raw_key }}</code>
+    <button type="button" class="rounded-lg bg-mint/20 px-3 py-2 text-sm text-mint hover:bg-mint/30"
+            onclick="copyText(document.getElementById('newkey').innerText, this)">{{ t('copy') }}</button>
+  </div>
+</div>
+{% endif %}
+
+<div class="mb-6 flex flex-wrap gap-2 text-sm">
+  {% for tab, label in [('keys', t('section_keys')), ('ips', t('section_ip')), ('models', t('section_models')), ('settings', t('section_settings')), ('logs', t('section_logs'))] %}
+  <a href="/console?tab={{ tab }}"
+     class="rounded-lg border px-4 py-2 {% if active_tab==tab %}tab-active{% else %}border-slate-700 text-slate-400 hover:bg-slate-800{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if active_tab == 'keys' %}
+<section class="card rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white">{{ t('section_keys') }}</h2>
+  <p class="mt-1 text-sm text-slate-400">{{ t('section_keys_help') }}</p>
+  <form method="post" action="/console/keys" class="mt-4 flex flex-wrap items-end gap-3">
+    <div class="min-w-[200px] flex-1">
+      <label class="mb-1 block text-xs text-slate-400">{{ t('key_name') }}</label>
+      <input class="input" name="name" placeholder="{{ t('key_name_placeholder') }}"/>
+    </div>
+    <button type="submit" class="rounded-xl bg-accent px-4 py-2 font-medium text-white hover:bg-accent-soft">{{ t('btn_create_key') }}</button>
+  </form>
+  <div class="mt-6 overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="text-xs uppercase text-slate-500">
+        <tr>
+          <th class="pb-2 pr-4">{{ t('col_name') }}</th>
+          <th class="pb-2 pr-4">{{ t('col_key') }}</th>
+          <th class="pb-2 pr-4">{{ t('col_created') }}</th>
+          <th class="pb-2">{{ t('col_actions') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        {% for k in keys %}
+        <tr>
+          <td class="py-3 pr-4 text-slate-200">{{ k.name }}</td>
+          <td class="py-3 pr-4 font-mono text-slate-300">{{ k.key_prefix }}</td>
+          <td class="py-3 pr-4 text-slate-500">{{ k.created_at }}</td>
+          <td class="py-3">
+            <form method="post" action="/console/keys/{{ k.id }}/revoke" onsubmit="return confirm('Revoke?')">
+              <button type="submit" class="rounded border border-rose-500/40 px-2 py-1 text-xs text-rose-300 hover:bg-rose-500/10">{{ t('btn_revoke') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="py-6 text-slate-500">{{ t('empty_keys') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% elif active_tab == 'ips' %}
+<section class="card rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white">{{ t('section_ip') }}</h2>
+  <p class="mt-1 text-sm text-slate-400">{{ t('section_ip_help') }}</p>
+  <form method="post" action="/console/ips" class="mt-4 flex flex-wrap items-end gap-3">
+    <div class="min-w-[240px] flex-1">
+      <label class="mb-1 block text-xs text-slate-400">IP / CIDR</label>
+      <input class="input" name="cidr" required placeholder="{{ t('ip_placeholder') }}"/>
+    </div>
+    <button type="submit" class="rounded-xl bg-accent px-4 py-2 font-medium text-white hover:bg-accent-soft">{{ t('btn_add_ip') }}</button>
+  </form>
+  <ul class="mt-6 divide-y divide-slate-800">
+    {% for e in ips %}
+    <li class="flex items-center justify-between py-3">
+      <code class="text-sm text-slate-200">{{ e.cidr }}</code>
+      <form method="post" action="/console/ips/{{ e.id }}/delete">
+        <button type="submit" class="rounded border border-slate-600 px-2 py-1 text-xs text-slate-300 hover:bg-slate-800">{{ t('btn_remove') }}</button>
+      </form>
+    </li>
+    {% else %}
+    <li class="py-6 text-slate-500">{{ t('empty_ips') }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% elif active_tab == 'models' %}
+<section class="card rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white">{{ t('section_models') }}</h2>
+  <p class="mt-1 text-sm text-slate-400">{{ t('section_models_help') }}</p>
+
+  <details class="mt-4 rounded-xl border border-slate-700 bg-ink-900/50 p-4" open>
+    <summary class="cursor-pointer font-medium text-slate-200">{{ t('btn_add_model') }}</summary>
+    <form method="post" action="/console/models" class="mt-4 grid gap-3 sm:grid-cols-2">
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('model_id') }}</label>
+        <input class="input" name="model_id" required placeholder="my-org/custom-mock-1"/>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('model_family') }}</label>
+        <select class="input" name="family">
+          <option value="openai">openai</option>
+          <option value="anthropic">anthropic</option>
+          <option value="gemini">gemini</option>
+          <option value="deepseek">deepseek</option>
+        </select>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('model_owned_by') }}</label>
+        <input class="input" name="owned_by" value="custom"/>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('model_params') }}</label>
+        <input class="input" name="parameter_count" placeholder="8B / 70B / unknown"/>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs text-slate-400">{{ t('model_context') }}</label>
+        <input class="input" name="context_window" placeholder="128000"/>
+      </div>
+      <div class="flex flex-wrap items-end gap-4 text-sm text-slate-300">
+        <label class="flex items-center gap-2"><input type="checkbox" name="thinking"/> {{ t('feat_thinking') }}</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="search"/> {{ t('feat_search') }}</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="multimodal" checked/> {{ t('feat_multimodal') }}</label>
+      </div>
+      <div class="sm:col-span-2">
+        <button type="submit" class="rounded-xl bg-accent px-4 py-2 font-medium text-white hover:bg-accent-soft">{{ t('btn_save') }}</button>
+      </div>
+    </form>
+  </details>
+
+  <h3 class="mt-8 mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('custom') }}</h3>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="text-xs uppercase text-slate-500">
+        <tr>
+          <th class="pb-2 pr-3">ID</th>
+          <th class="pb-2 pr-3">{{ t('col_family') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_params') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_context') }}</th>
+          <th class="pb-2">{{ t('col_actions') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        {% for m in customs %}
+        <tr>
+          <td class="py-2 pr-3 font-mono text-slate-200">{{ m.model_id }}</td>
+          <td class="py-2 pr-3 text-slate-400">{{ m.family }}</td>
+          <td class="py-2 pr-3 text-slate-300">{{ m.parameter_count or '—' }}</td>
+          <td class="py-2 pr-3 text-slate-300">{% if m.context_window %}{{ '{:,}'.format(m.context_window) }}{% else %}—{% endif %}</td>
+          <td class="py-2">
+            <form method="post" action="/console/models/{{ m.id }}/delete">
+              <button type="submit" class="rounded border border-rose-500/40 px-2 py-1 text-xs text-rose-300 hover:bg-rose-500/10">{{ t('btn_delete') }}</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="py-4 text-slate-500">—</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if catalog_meta %}
+  <p class="mt-8 text-xs text-slate-500">Catalog source: <span class="font-mono text-slate-400">{{ catalog_meta.source or 'bundled' }}</span>{% if catalog_meta.fetched_at %} · fetched {{ catalog_meta.fetched_at }}{% endif %} (auto-refresh TTL)</p>
+  {% endif %}
+  <h3 class="mt-3 mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{{ t('builtin') }}</h3>
+  <div class="overflow-x-auto max-h-96 overflow-y-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="sticky top-0 bg-ink-800 text-xs uppercase text-slate-500">
+        <tr>
+          <th class="pb-2 pr-3">ID</th>
+          <th class="pb-2 pr-3">{{ t('col_owner') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_params') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_context') }}</th>
+          <th class="pb-2">{{ t('model_features') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        {% for m in builtins %}
+        <tr>
+          <td class="py-2 pr-3 font-mono text-slate-200">{{ m.id }}</td>
+          <td class="py-2 pr-3 text-slate-400">{{ m.owned_by }}</td>
+          <td class="py-2 pr-3 text-slate-300">{{ m.parameter_count or '—' }}</td>
+          <td class="py-2 pr-3 text-slate-300">{% if m.context_window %}{{ '{:,}'.format(m.context_window) }}{% else %}—{% endif %}</td>
+          <td class="py-2 text-xs text-slate-500">
+            {% set f = m.features or {} %}
+            {% if f.get('thinking') %}<span class="mr-1 rounded bg-violet-500/20 px-1.5 py-0.5 text-violet-300">{{ t('feat_thinking') }}</span>{% endif %}
+            {% if f.get('search') %}<span class="mr-1 rounded bg-sky-500/20 px-1.5 py-0.5 text-sky-300">{{ t('feat_search') }}</span>{% endif %}
+            {% if f.get('multimodal_input') %}<span class="rounded bg-emerald-500/20 px-1.5 py-0.5 text-emerald-300">{{ t('feat_multimodal') }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% elif active_tab == 'settings' %}
+<section class="card rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white">{{ t('section_settings') }}</h2>
+  <p class="mt-1 text-sm text-slate-400">{{ t('section_settings_help') }}</p>
+
+  <form method="post" action="/console/settings/search" class="mt-6 rounded-xl border border-slate-700 bg-ink-900/50 p-5">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="max-w-xl">
+        <div class="text-sm font-medium text-slate-100">{{ t('setting_search') }}</div>
+        <p class="mt-1 text-sm text-slate-400">{{ t('setting_search_help') }}</p>
+        <p class="mt-2 text-xs {% if search_enabled %}text-mint{% else %}text-slate-500{% endif %}">
+          {% if search_enabled %}{{ t('setting_search_on') }}{% else %}{{ t('setting_search_off') }}{% endif %}
+        </p>
+      </div>
+      <label class="relative inline-flex cursor-pointer items-center gap-3">
+        <input type="checkbox" name="search_enabled" value="on" class="peer sr-only"
+               {% if search_enabled %}checked{% endif %} onchange="this.form.submit()"/>
+        <span class="h-7 w-12 rounded-full bg-slate-700 transition peer-checked:bg-mint/80 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5 relative"></span>
+      </label>
+    </div>
+    <noscript>
+      <button type="submit" class="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white">{{ t('btn_save_settings') }}</button>
+    </noscript>
+  </form>
+</section>
+
+{% elif active_tab == 'logs' %}
+<section class="card rounded-2xl p-6">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-lg font-semibold text-white">{{ t('section_logs') }}</h2>
+      <p class="mt-1 text-sm text-slate-400">{{ t('section_logs_help') }}</p>
+    </div>
+    <form method="post" action="/console/logs/clear" onsubmit="return confirm('Clear all request logs?')">
+      <button type="submit" class="rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800">{{ t('btn_clear_logs') }}</button>
+    </form>
+  </div>
+
+  <div class="mt-6 overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="text-xs uppercase text-slate-500">
+        <tr>
+          <th class="pb-2 pr-3">{{ t('col_time') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_method') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_path') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_status') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_latency') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_model') }}</th>
+          <th class="pb-2 pr-3">{{ t('col_key') }}</th>
+          <th class="pb-2">{{ t('btn_expand') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        {% for log in request_logs %}
+        <tr class="align-top">
+          <td class="py-3 pr-3 whitespace-nowrap text-slate-400 text-xs">{{ log.created_at }}</td>
+          <td class="py-3 pr-3 font-mono text-slate-300">{{ log.method }}</td>
+          <td class="py-3 pr-3 font-mono text-xs text-slate-300 max-w-[220px] truncate" title="{{ log.path }}">{{ log.path }}</td>
+          <td class="py-3 pr-3 {% if log.status and log.status >= 400 %}text-rose-300{% else %}text-mint{% endif %}">{{ log.status or '—' }}</td>
+          <td class="py-3 pr-3 text-slate-400">{% if log.latency_ms is not none %}{{ log.latency_ms }}ms{% else %}—{% endif %}</td>
+          <td class="py-3 pr-3 font-mono text-xs text-slate-300">{{ log.model or '—' }}</td>
+          <td class="py-3 pr-3 font-mono text-xs text-slate-500">{{ log.key_prefix or '—' }}</td>
+          <td class="py-3">
+            <details>
+              <summary class="cursor-pointer text-xs text-sky-300 hover:underline">{{ t('btn_expand') }}</summary>
+              <div class="mt-2 space-y-2 text-xs text-slate-400 max-w-xl">
+                <div>IP: <code class="text-slate-300">{{ log.client_ip or '—' }}</code> · {{ t('col_stream') }}: {% if log.stream %}{{ t('yes') }}{% else %}{{ t('no') }}{% endif %}</div>
+                <div>
+                  <div class="mb-1 text-slate-500">{{ t('col_summary') }}</div>
+                  <pre class="overflow-x-auto rounded-lg bg-ink-950 p-2 text-[11px] text-slate-300 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.response_summary or '—' }}</pre>
+                </div>
+                <div>
+                  <div class="mb-1 text-slate-500">Request</div>
+                  <pre class="overflow-x-auto rounded-lg bg-ink-950 p-2 text-[11px] text-slate-300 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.request_body or '—' }}</pre>
+                </div>
+              </div>
+            </details>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="py-8 text-slate-500">{{ t('empty_logs') }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endif %}
+{% endblock %}

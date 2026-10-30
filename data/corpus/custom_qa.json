@@ -1,0 +1,26 @@
+[
+  {
+    "pattern": "(?i)\\bping\\b",
+    "match": "regex",
+    "reply": "pong",
+    "langs": ["*"]
+  },
+  {
+    "pattern": "你好 mock",
+    "match": "contains",
+    "reply": "你好！我是 Mock My AI，这是一条自定义语料回复。",
+    "langs": ["zh"]
+  },
+  {
+    "pattern": "hello mock",
+    "match": "contains",
+    "reply": "Hello! This is a custom Q&A override from Mock My AI.",
+    "langs": ["en"]
+  },
+  {
+    "pattern": "(?i)what is mock my ai",
+    "match": "regex",
+    "reply": "Mock My AI is an open-source server that mocks OpenAI, Anthropic, and Gemini style APIs with fake but schema-correct responses.",
+    "langs": ["*"]
+  }
+]

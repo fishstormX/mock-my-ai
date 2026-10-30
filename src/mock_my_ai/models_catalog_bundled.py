@@ -1,0 +1,92 @@
+"""Bundled offline snapshot of models.dev-mapped catalogs (auto-generated)."""
+from __future__ import annotations
+
+from typing import Any
+
+BUNDLED_OPENAI_MODELS: list[dict[str, Any]] = [
+    {"id": 'gpt-4o', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 128000, "features": {"multimodal_input": True, "thinking": False, "search": True}},
+    {"id": 'gpt-4o-mini', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 128000, "features": {"multimodal_input": True, "thinking": False, "search": True}},
+    {"id": 'gpt-4.1', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1047576, "features": {"multimodal_input": True, "thinking": False, "search": True}},
+    {"id": 'gpt-4.1-mini', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1047576, "features": {"multimodal_input": True, "thinking": False, "search": True}},
+    {"id": 'o3', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5-mini', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.4', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.6', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-6.1-terra', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-6.1-sol', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-6-luna', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-6-sol', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-6-astra', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-daybreak-blue-latest', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-daybreak-red-latest', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.6-terra', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.6-luna', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.6-sol', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.5-pro', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.5', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.4-mini', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.4-nano', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.4-pro', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 1050000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.3-codex-spark', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 128000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.3-codex', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.2-pro', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.2', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5.1', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5-pro', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gpt-5-nano', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 400000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'o3-pro', "owned_by": 'openai', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'deepseek-flash', "owned_by": 'deepseek', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'deepseek-v4-pro', "owned_by": 'deepseek', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": False, "thinking": True, "search": True}},
+]
+
+BUNDLED_ANTHROPIC_MODELS: list[dict[str, Any]] = [
+    {"id": 'claude-sonnet-4-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-haiku-4-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-4-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-sonnet-4-6', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-4-6', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-sonnet-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-haiku-5-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-sonnet-5-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-5-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-fable-5-1', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-fable-5', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-4-8', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-4-7', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 1000000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-opus-4-5-20251101', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-haiku-4-5-20251001', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'claude-sonnet-4-5-20250929', "owned_by": 'anthropic', "parameter_count": 'unknown', "context_window": 200000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+]
+
+BUNDLED_GEMINI_MODELS: list[dict[str, Any]] = [
+    {"id": 'gemini-2.5-pro', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-2.5-flash', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-2.5-flash-lite', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-pro-latest', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-flash-latest', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.5-flash', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-4-argon', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.8-flash', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.7-flash', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.6-flash', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.5-flash-lite', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-flash-lite-latest', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.1-flash-lite', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.1-pro-preview-customtools', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3.1-pro-preview', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-3-flash-preview', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 1048576, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+    {"id": 'gemini-2.5-computer-use-preview-10-2025', "owned_by": 'google', "parameter_count": 'unknown', "context_window": 128000, "features": {"multimodal_input": True, "thinking": True, "search": True}},
+]
+
+BUNDLED_CACHE: dict[str, Any] = {
+    "fetched_at": '2026-10-30T09:25:53.175671+00:00',
+    "source": "bundled-fallback",
+    "provider_counts": {"openai_src": 51, "anthropic_src": 17, "google_src": 36, "deepseek_src": 4, "openai": 34, "anthropic": 17, "gemini": 17},
+    "catalogs": {
+        "openai": BUNDLED_OPENAI_MODELS,
+        "anthropic": BUNDLED_ANTHROPIC_MODELS,
+        "gemini": BUNDLED_GEMINI_MODELS,
+    },
+}

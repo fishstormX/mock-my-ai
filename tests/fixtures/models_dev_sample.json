@@ -1,0 +1,129 @@
+{
+  "openai": {
+    "models": {
+      "gpt-4o": {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "release_date": "2024-05-13",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 128000}
+      },
+      "gpt-3.5-turbo": {
+        "id": "gpt-3.5-turbo",
+        "status": "deprecated",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "release_date": "2023-03-01",
+        "modalities": {"input": ["text"], "output": ["text"]},
+        "limit": {"context": 16385}
+      },
+      "text-embedding-3-small": {
+        "id": "text-embedding-3-small",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "release_date": "2024-01-25",
+        "modalities": {"input": ["text"], "output": ["text"]},
+        "limit": {"context": 8191}
+      },
+      "gpt-image-1": {
+        "id": "gpt-image-1",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "release_date": "2025-04-01",
+        "modalities": {"input": ["text"], "output": ["image"]},
+        "limit": {"context": 0}
+      },
+      "o3": {
+        "id": "o3",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2025-04-16",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 200000}
+      }
+    }
+  },
+  "anthropic": {
+    "models": {
+      "claude-sonnet-4-5": {
+        "id": "claude-sonnet-4-5",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2025-09-29",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 200000}
+      },
+      "claude-3-opus-20240229": {
+        "id": "claude-3-opus-20240229",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "release_date": "2024-02-29",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 200000}
+      }
+    }
+  },
+  "google": {
+    "models": {
+      "gemini-2.5-flash": {
+        "id": "gemini-2.5-flash",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2025-06-17",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 1048576}
+      },
+      "gemini-pro": {
+        "id": "gemini-pro",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "release_date": "2023-12-01",
+        "modalities": {"input": ["text"], "output": ["text"]},
+        "limit": {"context": 32768}
+      },
+      "gemma-4-31b-it": {
+        "id": "gemma-4-31b-it",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2026-04-02",
+        "modalities": {"input": ["text"], "output": ["text"]},
+        "limit": {"context": 262144}
+      }
+    }
+  },
+  "deepseek": {
+    "models": {
+      "deepseek-flash": {
+        "id": "deepseek-flash",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2026-10-17",
+        "modalities": {"input": ["text", "image"], "output": ["text"]},
+        "limit": {"context": 1048576}
+      },
+      "deepseek-v4-flash": {
+        "id": "deepseek-v4-flash",
+        "status": "deprecated",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "release_date": "2026-10-17",
+        "modalities": {"input": ["text"], "output": ["text"]},
+        "limit": {"context": 1048576}
+      }
+    }
+  }
+}
