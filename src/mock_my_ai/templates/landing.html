@@ -16,6 +16,8 @@
         <a href="/login" class="rounded-xl border border-slate-600 px-5 py-2.5 font-medium text-slate-200 hover:bg-slate-800">{{ t('nav_login') }}</a>
       {% endif %}
       <a href="/docs/" class="rounded-xl border border-slate-700 px-5 py-2.5 text-slate-300 hover:bg-slate-800">{{ t('cta_view_docs') }}</a>
+      <a href="{{ github_url }}" target="_blank" rel="noopener noreferrer"
+         class="rounded-xl border border-slate-700 px-5 py-2.5 text-slate-300 hover:bg-slate-800">{{ t('cta_github') }}</a>
       <a href="/models" class="rounded-xl border border-slate-700 px-5 py-2.5 text-slate-300 hover:bg-slate-800">{{ t('nav_models') }}</a>
     </div>
   </div>
@@ -99,6 +101,7 @@
     <button type="button" class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-800"
             onclick="copyText('{{ base_url }}', this)">{{ t('copy') }}</button>
     <a href="/models" class="text-sm text-accent-soft hover:underline">{{ t('nav_models') }} →</a>
+    <a href="{{ github_url }}" target="_blank" rel="noopener noreferrer" class="text-sm text-accent-soft hover:underline">GitHub →</a>
     <a href="/healthz" class="text-sm text-slate-400 hover:text-white">/healthz</a>
   </div>
 </section>
@@ -113,6 +116,8 @@
       <a href="/register" class="rounded-xl bg-white px-5 py-2.5 font-medium text-ink-900 hover:bg-slate-100">{{ t('pricing_cta') }}</a>
     {% endif %}
     <a href="/docs/" class="rounded-xl border border-slate-500 px-5 py-2.5 text-slate-200 hover:bg-slate-800/60">{{ t('cta_view_docs') }}</a>
+    <a href="{{ github_url }}" target="_blank" rel="noopener noreferrer"
+       class="rounded-xl border border-slate-500 px-5 py-2.5 text-slate-200 hover:bg-slate-800/60">{{ t('cta_github') }}</a>
   </div>
 </section>
 

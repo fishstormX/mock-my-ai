@@ -7,7 +7,7 @@
 Open-source **mock AI API server** for local agents, SDKs, and CI.  
 Point OpenAI / Anthropic / Gemini-compatible clients at Mock My AI and get **schema-correct fake replies** — no upstream inference, no API bills.
 
-**Live demo:** [https://aimock.fishmaple.cn](https://aimock.fishmaple.cn)
+**Live demo:** [https://aimock.fishmaple.cn](https://aimock.fishmaple.cn) · **GitHub:** [fishstormX/mock-my-ai](https://github.com/fishstormX/mock-my-ai)
 
 ---
 
@@ -35,7 +35,7 @@ Responses are **corpus text**, not model output. Treat every reply as mock data.
 | **Auth** | Sample keys + console-issued keys; optional IP/CIDR allowlist |
 | **Console** | Sign up, API keys, custom models, request log, settings (ZH/EN) |
 | **Catalog** | models.dev refresh → `data/models_catalog_cache.json` (24h TTL) + bundled offline snapshot |
-| **Docs** | MkDocs site + FastAPI OpenAPI at `/api/docs` |
+| **Docs** | Bilingual (EN/ZH) agent integration guides + FastAPI OpenAPI at `/api/docs` |
 
 ---
 
@@ -206,7 +206,7 @@ Visit `/` (ZH/EN marketing), then **Sign up**:
 - Optional IP / CIDR allowlist (empty = allow all)
 - Custom models (params + context window)
 - Public model browser at `/models`
-- Request log (console)
+- Request log (per-key isolation; 6h / max 20 per key; expandable full JSON)
 
 SQLite defaults to `data/app.db` (gitignored).
 
@@ -226,7 +226,7 @@ data/corpus/<lang>/          # JSONL segments (en zh ja es fr)
 data/corpus/custom_qa.json   # exact / pattern Q&A overrides
 data/models_catalog_cache.json
 src/mock_my_ai/              # FastAPI app, routes, generation, console
-docs/                        # MkDocs source
+docs/en docs/zh              # MkDocs agent integration (EN/ZH)
 scripts/generate_corpus.py
 tests/                       # pytest (50+ smoke / behavior tests)
 Dockerfile / docker-compose.yml

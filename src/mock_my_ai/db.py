@@ -112,11 +112,18 @@ def init_db() -> None:
                 client_ip TEXT,
                 stream INTEGER NOT NULL DEFAULT 0,
                 request_body TEXT,
-                response_summary TEXT
+                response_summary TEXT,
+                response_body TEXT,
+                user_id INTEGER,
+                api_key_id INTEGER
             );
             CREATE INDEX IF NOT EXISTS idx_request_logs_created ON request_logs(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_request_logs_user ON request_logs(user_id, id DESC);
+            CREATE INDEX IF NOT EXISTS idx_request_logs_key ON request_logs(api_key_id, id DESC);
+            CREATE INDEX IF NOT EXISTS idx_request_logs_prefix ON request_logs(key_prefix, id DESC);
             """
         )
+        _migrate_request_logs(conn)
 
 
 # ── password / key hashing ──────────────────────────────────────────
@@ -483,10 +490,37 @@ def set_search_enabled(enabled: bool) -> None:
 
 # ── request logs ────────────────────────────────────────────────────
 
-_REQUEST_LOG_MAX_ROWS = 500
-_REQUEST_LOG_MAX_DAYS = 7
-_REQUEST_BODY_MAX = 4000
-_RESPONSE_SUMMARY_MAX = 2000
+_REQUEST_LOG_MAX_AGE_HOURS = 6
+_REQUEST_LOG_MAX_PER_KEY = 20
+_REQUEST_BODY_MAX = 100_000
+_RESPONSE_BODY_MAX = 100_000
+_RESPONSE_SUMMARY_MAX = 4000
+
+_LOG_SELECT = """id, created_at, method, path, status, latency_ms, model,
+                 key_prefix, client_ip, stream, request_body, response_summary,
+                 response_body, user_id, api_key_id"""
+
+
+def _migrate_request_logs(conn: sqlite3.Connection) -> None:
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(request_logs)").fetchall()}
+    alters = []
+    if "response_body" not in cols:
+        alters.append("ALTER TABLE request_logs ADD COLUMN response_body TEXT")
+    if "user_id" not in cols:
+        alters.append("ALTER TABLE request_logs ADD COLUMN user_id INTEGER")
+    if "api_key_id" not in cols:
+        alters.append("ALTER TABLE request_logs ADD COLUMN api_key_id INTEGER")
+    for sql in alters:
+        conn.execute(sql)
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_request_logs_user ON request_logs(user_id, id DESC)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_request_logs_key ON request_logs(api_key_id, id DESC)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_request_logs_prefix ON request_logs(key_prefix, id DESC)"
+    )
 
 
 def _truncate(s: str | None, n: int) -> str | None:
@@ -495,6 +529,40 @@ def _truncate(s: str | None, n: int) -> str | None:
     if len(s) <= n:
         return s
     return s[: n - 1] + "…"
+
+
+def _prune_request_logs(
+    conn: sqlite3.Connection,
+    *,
+    api_key_id: int | None,
+    key_prefix: str | None,
+) -> None:
+    from datetime import timedelta
+
+    cutoff = (
+        datetime.now(timezone.utc) - timedelta(hours=_REQUEST_LOG_MAX_AGE_HOURS)
+    ).strftime("%Y-%m-%dT%H:%M:%SZ")
+    conn.execute("DELETE FROM request_logs WHERE created_at < ?", (cutoff,))
+
+    # Per-key cap: prefer api_key_id; fall back to key_prefix for sample/prefix keys
+    if api_key_id is not None:
+        conn.execute(
+            """DELETE FROM request_logs WHERE api_key_id = ? AND id NOT IN (
+                 SELECT id FROM request_logs WHERE api_key_id = ?
+                 ORDER BY id DESC LIMIT ?
+               )""",
+            (api_key_id, api_key_id, _REQUEST_LOG_MAX_PER_KEY),
+        )
+    elif key_prefix:
+        conn.execute(
+            """DELETE FROM request_logs
+               WHERE api_key_id IS NULL AND key_prefix = ? AND id NOT IN (
+                 SELECT id FROM request_logs
+                 WHERE api_key_id IS NULL AND key_prefix = ?
+                 ORDER BY id DESC LIMIT ?
+               )""",
+            (key_prefix, key_prefix, _REQUEST_LOG_MAX_PER_KEY),
+        )
 
 
 def insert_request_log(
@@ -509,14 +577,18 @@ def insert_request_log(
     stream: bool = False,
     request_body: str | None = None,
     response_summary: str | None = None,
+    response_body: str | None = None,
+    user_id: int | None = None,
+    api_key_id: int | None = None,
 ) -> int:
     now = _utc_now()
     with _lock, connect() as conn:
         cur = conn.execute(
             """INSERT INTO request_logs
                (created_at, method, path, status, latency_ms, model, key_prefix,
-                client_ip, stream, request_body, response_summary)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                client_ip, stream, request_body, response_summary, response_body,
+                user_id, api_key_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 now,
                 method,
@@ -529,35 +601,36 @@ def insert_request_log(
                 1 if stream else 0,
                 _truncate(request_body, _REQUEST_BODY_MAX),
                 _truncate(response_summary, _RESPONSE_SUMMARY_MAX),
+                _truncate(response_body, _RESPONSE_BODY_MAX),
+                user_id,
+                api_key_id,
             ),
         )
         rid = int(cur.lastrowid)
-        # Prune by age (ISO timestamps with Z compare lexicographically)
-        from datetime import timedelta
-
-        cutoff = (
-            datetime.now(timezone.utc) - timedelta(days=_REQUEST_LOG_MAX_DAYS)
-        ).strftime("%Y-%m-%dT%H:%M:%SZ")
-        conn.execute("DELETE FROM request_logs WHERE created_at < ?", (cutoff,))
-        # Prune by count (keep newest N)
-        conn.execute(
-            """DELETE FROM request_logs WHERE id NOT IN (
-                 SELECT id FROM request_logs ORDER BY id DESC LIMIT ?
-               )""",
-            (_REQUEST_LOG_MAX_ROWS,),
-        )
+        _prune_request_logs(conn, api_key_id=api_key_id, key_prefix=key_prefix)
     return rid
 
 
-def list_request_logs(limit: int = 100) -> list[dict[str, Any]]:
+def list_request_logs(
+    limit: int = 100,
+    *,
+    user_id: int | None = None,
+) -> list[dict[str, Any]]:
+    """List logs newest-first. When user_id is set, only that user's key traffic."""
     limit = max(1, min(500, int(limit)))
     with connect() as conn:
-        rows = conn.execute(
-            """SELECT id, created_at, method, path, status, latency_ms, model,
-                      key_prefix, client_ip, stream, request_body, response_summary
-               FROM request_logs ORDER BY id DESC LIMIT ?""",
-            (limit,),
-        ).fetchall()
+        if user_id is None:
+            rows = conn.execute(
+                f"SELECT {_LOG_SELECT} FROM request_logs ORDER BY id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                f"""SELECT {_LOG_SELECT} FROM request_logs
+                    WHERE user_id = ?
+                    ORDER BY id DESC LIMIT ?""",
+                (int(user_id), limit),
+            ).fetchall()
     out = []
     for r in rows:
         d = dict(r)
@@ -566,14 +639,18 @@ def list_request_logs(limit: int = 100) -> list[dict[str, Any]]:
     return out
 
 
-def get_request_log(log_id: int) -> dict[str, Any] | None:
+def get_request_log(log_id: int, *, user_id: int | None = None) -> dict[str, Any] | None:
     with connect() as conn:
-        row = conn.execute(
-            """SELECT id, created_at, method, path, status, latency_ms, model,
-                      key_prefix, client_ip, stream, request_body, response_summary
-               FROM request_logs WHERE id = ?""",
-            (log_id,),
-        ).fetchone()
+        if user_id is None:
+            row = conn.execute(
+                f"SELECT {_LOG_SELECT} FROM request_logs WHERE id = ?",
+                (log_id,),
+            ).fetchone()
+        else:
+            row = conn.execute(
+                f"SELECT {_LOG_SELECT} FROM request_logs WHERE id = ? AND user_id = ?",
+                (log_id, int(user_id)),
+            ).fetchone()
     if not row:
         return None
     d = dict(row)
@@ -581,8 +658,12 @@ def get_request_log(log_id: int) -> dict[str, Any] | None:
     return d
 
 
-def clear_request_logs() -> int:
+def clear_request_logs(*, user_id: int | None = None) -> int:
+    """Clear logs. When user_id is set, only that user's rows are removed."""
     with _lock, connect() as conn:
-        cur = conn.execute("DELETE FROM request_logs")
+        if user_id is None:
+            cur = conn.execute("DELETE FROM request_logs")
+        else:
+            cur = conn.execute("DELETE FROM request_logs WHERE user_id = ?", (int(user_id),))
         return cur.rowcount
 

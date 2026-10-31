@@ -55,6 +55,7 @@
         <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/models">{{ t('nav_models') }}</a>
         <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/docs/">{{ t('nav_docs') }}</a>
         <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/api/docs">{{ t('nav_api') }}</a>
+        <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="{{ github_url }}" target="_blank" rel="noopener noreferrer">{{ t('nav_github') }}</a>
         {% if user %}
           <a class="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-white" href="/console">{{ t('nav_console') }}</a>
           <form action="/logout" method="post" class="inline">
@@ -87,9 +88,10 @@
         <span class="mx-2">·</span>
         {{ author }}
       </div>
-      <div>
-        {{ t('footer_contact') }}:
-        <a class="text-accent-soft hover:underline" href="mailto:{{ contact }}">{{ contact }}</a>
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="text-accent-soft hover:underline" href="{{ github_url }}" target="_blank" rel="noopener noreferrer">{{ t('nav_github') }}</a>
+        <span>{{ t('footer_contact') }}:
+        <a class="text-accent-soft hover:underline" href="mailto:{{ contact }}">{{ contact }}</a></span>
       </div>
     </div>
   </footer>

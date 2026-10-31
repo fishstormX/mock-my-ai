@@ -20,6 +20,23 @@ TEMPLATES_DIR = Path(__file__).resolve().parents[1] / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
+def _pretty_json(value: Any) -> str:
+    import json
+
+    if value is None or value == "":
+        return "—"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, indent=2, ensure_ascii=False)
+    s = str(value)
+    try:
+        return json.dumps(json.loads(s), indent=2, ensure_ascii=False)
+    except Exception:
+        return s
+
+
+templates.env.filters["pretty_json"] = _pretty_json
+
+
 def _lang(request: Request) -> str:
     return pick_lang(
         request.cookies.get("lang"),
@@ -67,6 +84,7 @@ def _ctx(request: Request, **extra: Any) -> dict[str, Any]:
         "studio": "妙妙鱼",
         "author": "fishstormX",
         "contact": "stormnetwork@163.com",
+        "github_url": "https://github.com/fishstormX/mock-my-ai",
         **extra,
     }
 
@@ -201,7 +219,7 @@ async def console_home(request: Request):
     flash_key = request.session.pop("flash_raw_key", None)
     flash_msg = request.session.pop("flash_msg", None)
     active = request.query_params.get("tab", "keys")
-    logs = list_request_logs(100) if active == "logs" else []
+    logs = list_request_logs(100, user_id=user["id"]) if active == "logs" else []
     return templates.TemplateResponse(
         request,
         "console/index.html",
@@ -344,7 +362,7 @@ async def console_clear_logs(request: Request):
         return user
     from mock_my_ai.db import clear_request_logs
 
-    clear_request_logs()
+    clear_request_logs(user_id=user["id"])
     request.session["flash_msg"] = "logs_cleared"
     return RedirectResponse("/console?tab=logs", status_code=303)
 

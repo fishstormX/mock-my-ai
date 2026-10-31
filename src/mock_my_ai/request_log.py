@@ -32,7 +32,7 @@ def should_log_request(method: str, path: str) -> bool:
     return False
 
 
-def _key_prefix_from_headers(request: Request) -> str | None:
+def _raw_key_from_headers(request: Request) -> str | None:
     raw = (
         request.headers.get("x-api-key")
         or request.headers.get("x-goog-api-key")
@@ -46,11 +46,44 @@ def _key_prefix_from_headers(request: Request) -> str | None:
             raw = auth.strip()
     if not raw:
         raw = request.query_params.get("key") or ""
+    return raw or None
+
+
+def _key_prefix(raw: str | None) -> str | None:
     if not raw:
         return None
     if len(raw) <= 12:
         return raw[:4] + "…"
     return raw[:10] + "…" + raw[-4:]
+
+
+def _resolve_log_key(request: Request) -> dict[str, Any]:
+    """Return key_prefix / user_id / api_key_id for request logging (never raw secret)."""
+    raw = _raw_key_from_headers(request)
+    prefix = _key_prefix(raw)
+    out: dict[str, Any] = {
+        "key_prefix": prefix,
+        "user_id": None,
+        "api_key_id": None,
+    }
+    if not raw:
+        return out
+    try:
+        from mock_my_ai.auth import resolve_key
+        from mock_my_ai.config import get_config
+
+        ctx = resolve_key(raw, get_config())
+    except Exception:
+        ctx = None
+    if not ctx:
+        return out
+    if ctx.get("kind") == "db":
+        out["user_id"] = ctx.get("user_id")
+        out["api_key_id"] = ctx.get("key_id")
+        # Prefer console display prefix when available
+        if ctx.get("key_prefix"):
+            out["key_prefix"] = ctx["key_prefix"]
+    return out
 
 
 def _client_ip(request: Request) -> str | None:
@@ -161,30 +194,33 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
             if m:
                 model = m.group(1)
 
-        key_prefix = _key_prefix_from_headers(request)
+        key_meta = _resolve_log_key(request)
         client_ip = _client_ip(request)
 
         response = await call_next(request)
         latency_ms = int((time.perf_counter() - t0) * 1000)
 
         # Collect body for non-streaming JSON; leave streaming alone
-        resp_body = b""
         media = response.headers.get("content-type", "")
         is_sse = "text/event-stream" in media or stream_flag
 
         if is_sse:
             summary = _summarize_response(b"", stream=True)
+            stream_body = json.dumps({"stream": True, "note": "SSE body not buffered"}, ensure_ascii=False)
             self._persist(
                 method=request.method,
                 path=path,
                 status=response.status_code,
                 latency_ms=latency_ms,
                 model=model,
-                key_prefix=key_prefix,
+                key_prefix=key_meta["key_prefix"],
                 client_ip=client_ip,
                 stream=True,
                 request_body=req_text,
                 response_summary=summary,
+                response_body=stream_body,
+                user_id=key_meta["user_id"],
+                api_key_id=key_meta["api_key_id"],
             )
             return response
 
@@ -196,17 +232,29 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
             body_parts.append(chunk)
         resp_body = b"".join(body_parts)
         summary = _summarize_response(resp_body, stream=False)
+        resp_text = ""
+        if resp_body:
+            try:
+                resp_text = json.dumps(
+                    json.loads(resp_body.decode("utf-8", errors="replace")),
+                    ensure_ascii=False,
+                )
+            except Exception:
+                resp_text = resp_body.decode("utf-8", errors="replace")
         self._persist(
             method=request.method,
             path=path,
             status=response.status_code,
             latency_ms=latency_ms,
             model=model,
-            key_prefix=key_prefix,
+            key_prefix=key_meta["key_prefix"],
             client_ip=client_ip,
             stream=False,
             request_body=req_text,
             response_summary=summary,
+            response_body=resp_text,
+            user_id=key_meta["user_id"],
+            api_key_id=key_meta["api_key_id"],
         )
 
         headers = dict(response.headers)

@@ -283,17 +283,21 @@
           <td class="py-3 pr-3 font-mono text-xs text-slate-300">{{ log.model or '—' }}</td>
           <td class="py-3 pr-3 font-mono text-xs text-slate-500">{{ log.key_prefix or '—' }}</td>
           <td class="py-3">
-            <details>
+            <details class="log-details">
               <summary class="cursor-pointer text-xs text-sky-300 hover:underline">{{ t('btn_expand') }}</summary>
-              <div class="mt-2 space-y-2 text-xs text-slate-400 max-w-xl">
+              <div class="mt-2 space-y-3 text-xs text-slate-400 max-w-3xl">
                 <div>IP: <code class="text-slate-300">{{ log.client_ip or '—' }}</code> · {{ t('col_stream') }}: {% if log.stream %}{{ t('yes') }}{% else %}{{ t('no') }}{% endif %}</div>
                 <div>
-                  <div class="mb-1 text-slate-500">{{ t('col_summary') }}</div>
-                  <pre class="overflow-x-auto rounded-lg bg-ink-950 p-2 text-[11px] text-slate-300 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.response_summary or '—' }}</pre>
+                  <div class="mb-1 font-medium text-slate-400">{{ t('col_summary') }}</div>
+                  <pre class="overflow-x-auto rounded-lg bg-ink-950 p-2 text-[11px] text-slate-300 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.response_summary|pretty_json }}</pre>
                 </div>
                 <div>
-                  <div class="mb-1 text-slate-500">Request</div>
-                  <pre class="overflow-x-auto rounded-lg bg-ink-950 p-2 text-[11px] text-slate-300 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.request_body or '—' }}</pre>
+                  <div class="mb-1 font-medium text-slate-400">{{ t('col_request_json') }}</div>
+                  <pre class="overflow-x-auto max-h-80 rounded-lg bg-ink-950 p-2 text-[11px] text-slate-200 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.request_body|pretty_json }}</pre>
+                </div>
+                <div>
+                  <div class="mb-1 font-medium text-slate-400">{{ t('col_response_json') }}</div>
+                  <pre class="overflow-x-auto max-h-80 rounded-lg bg-ink-950 p-2 text-[11px] text-slate-200 ring-1 ring-slate-800 whitespace-pre-wrap">{{ log.response_body|pretty_json }}</pre>
                 </div>
               </div>
             </details>

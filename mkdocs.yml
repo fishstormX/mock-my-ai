@@ -1,9 +1,11 @@
 site_name: Mock My AI
-site_description: Mock OpenAI, Anthropic, and Gemini compatible AI APIs
-site_url: https://example.com/mock-my-ai
-repo_url: https://github.com/example/mock-my-ai
+site_description: Mock OpenAI, Anthropic, and Gemini compatible AI APIs — agent integration guide
+site_url: https://aimock.fishmaple.cn/docs/
+repo_url: https://github.com/fishstormX/mock-my-ai
+repo_name: fishstormX/mock-my-ai
 theme:
   name: material
+  language: en
   palette:
     - scheme: default
       primary: indigo
@@ -15,17 +17,48 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  features:
+    - navigation.sections
+    - content.code.copy
 nav:
-  - Home: index.md
-  - Quickstart: quickstart.md
-  - Configuration: guides/configuration.md
-  - Models: guides/models.md
-  - Corpus & Languages: guides/corpus.md
-  - Tools: guides/tools.md
-  - API:
-      - OpenAI Compatible: api/openai.md
-      - Anthropic Compatible: api/anthropic.md
-      - Gemini Compatible: api/gemini.md
+  - English:
+      - Home: en/index.md
+      - Quickstart: en/quickstart.md
+      - Agent integration:
+          - Overview: en/agents/overview.md
+          - OpenAI SDK: en/agents/openai.md
+          - Codex CLI: en/agents/codex.md
+          - Anthropic / Claude Code: en/agents/anthropic.md
+          - Gemini: en/agents/gemini.md
+          - Hermes / generic: en/agents/hermes.md
+      - Guides:
+          - Configuration: en/guides/configuration.md
+          - Models: en/guides/models.md
+          - Corpus & Languages: en/guides/corpus.md
+          - Tools: en/guides/tools.md
+      - API reference:
+          - OpenAI: en/api/openai.md
+          - Anthropic: en/api/anthropic.md
+          - Gemini: en/api/gemini.md
+  - 中文:
+      - 首页: zh/index.md
+      - 快速开始: zh/quickstart.md
+      - Agent 接入:
+          - 总览: zh/agents/overview.md
+          - OpenAI SDK: zh/agents/openai.md
+          - Codex CLI: zh/agents/codex.md
+          - Anthropic / Claude Code: zh/agents/anthropic.md
+          - Gemini: zh/agents/gemini.md
+          - Hermes / 通用: zh/agents/hermes.md
+      - 指南:
+          - 配置: zh/guides/configuration.md
+          - 模型: zh/guides/models.md
+          - 语料与语言: zh/guides/corpus.md
+          - 工具: zh/guides/tools.md
+      - API 参考:
+          - OpenAI: zh/api/openai.md
+          - Anthropic: zh/api/anthropic.md
+          - Gemini: zh/api/gemini.md
 markdown_extensions:
   - admonition
   - pymdownx.superfences

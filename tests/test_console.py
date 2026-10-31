@@ -242,8 +242,26 @@ def test_console_search_toggle_and_request_logs(client):
     assert r.status_code == 200
     assert r.json()["mock_my_ai"]["search_results"] is None
 
-    # Request logs tab should list recent API calls
+    # Request logs are key-isolated: sample-key traffic does not appear for this user.
+    # Create a console key, call the API, then expect the path in logs.
+    r = client.post("/console/keys", data={"name": "log-check"}, follow_redirects=True)
+    m = re.search(r"sk-mock-[a-f0-9]{48}", r.text)
+    assert m
+    raw = m.group(0)
+    r = client.post(
+        "/v1/messages",
+        headers={"x-api-key": raw},
+        json={
+            "model": "claude-sonnet-4-5",
+            "max_tokens": 64,
+            "messages": [{"role": "user", "content": "console-log-check"}],
+            "mock_seed": 72,
+        },
+    )
+    assert r.status_code == 200
+
     r = client.get("/console?tab=logs")
     assert r.status_code == 200
     assert "/v1/messages" in r.text
+    assert "console-log-check" in r.text
 
