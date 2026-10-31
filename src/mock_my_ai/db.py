@@ -118,9 +118,9 @@ def init_db() -> None:
                 api_key_id INTEGER
             );
             CREATE INDEX IF NOT EXISTS idx_request_logs_created ON request_logs(created_at DESC);
-            CREATE INDEX IF NOT EXISTS idx_request_logs_user ON request_logs(user_id, id DESC);
-            CREATE INDEX IF NOT EXISTS idx_request_logs_key ON request_logs(api_key_id, id DESC);
             CREATE INDEX IF NOT EXISTS idx_request_logs_prefix ON request_logs(key_prefix, id DESC);
+            -- idx_request_logs_user / idx_request_logs_key created in _migrate_request_logs
+            -- after ALTER ADD COLUMN on existing DBs (CREATE TABLE IF NOT EXISTS is a no-op).
             """
         )
         _migrate_request_logs(conn)
